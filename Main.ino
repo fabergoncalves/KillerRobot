@@ -126,7 +126,8 @@ int medicaoUltrasomFrontal()
 	return(distanciafrente);
 }
 
-int medicaoUltrasomEsquerda(){ //Função para retornar a distância aferida pelo sensor ultrasonico da esquerda
+int medicaoUltrasomEsquerda()
+{ //Função para retornar a distância aferida pelo sensor ultrasonico da esquerda
 	analogWrite(trigpinesq,0);
 	delayMicroseconds(2);
 	analogWrite(trigpinesq,255);
@@ -137,7 +138,8 @@ int medicaoUltrasomEsquerda(){ //Função para retornar a distância aferida pel
 	return(distanciaesquerda);
 }
 
-int medicaoUltrasomDireita(){ //Função para retornar a distância aferida pelo sensor ultrasonico da direita
+int medicaoUltrasomDireita()
+{ //Função para retornar a distância aferida pelo sensor ultrasonico da direita
 	analogWrite(trigpindir,0);
 	delayMicroseconds(2);
 	analogWrite(trigpindir,255);
@@ -163,12 +165,16 @@ void piscarLed()
 void loop(){
 	estadobotao=digitalRead(botao);
 
-	while(estadobotao==0){// fica lendo o botao (pull-down) até se pressionado
+	while(estadobotao==0)
+	{
+		// fica lendo o botao (pull-down) até se pressionado
 		estadobotao=digitalRead(botao);
 		piscarled();
 		andarfrente();
 		tempoanterior=millis();
-		while(tempo<90000){ //luta enquanto durar tempo da partida
+		while(tempo<90000)
+		{
+			//luta enquanto durar tempo da partida
 			estadosbfd=digitalRead(sbfd); // Bate um pano no cenário através dos sensores
 			estadosbfe=digitalRead(sbfe); //
 			estadosbtd=digitalRead(sbtd); //
@@ -176,17 +182,32 @@ void loop(){
 			ultrassonicofrente();
 			ultrassonicoesquerda();
 			ultrassonicodireita();
-			if(estadosbfd==1 || estadosbfe==1) { // """Vai para "trás" caso sensor da frente acusar o branco"""   NOTA: 0 - Branco,  1 - Preto
-				andartras();}
-			else if(estadosbtd==1 || estadosbte==1) { // """Vai para "Frente" caso sensor de trás acusar o branco."""   NOTA: 0 - Branco,  1 - Preto
-				andarfrente();}
-			else if(distanciafrente<=60 && estadosbfd==0 && estadosbfe==0) { // """Ir para "Frente" caso ache um oponente na "frente" e os sensore não estiver na borda"""
-				andarfrente();}
-			else if(distanciadireita<=60) { // """Girar para Direita" caso ache um oponente a 7 centimetros"
-				girardireita();}
-			else if(distanciaesquerda<=60) { // """Girar para Esquerda" caso ache um oponente a 7 centimetros"
-				giraresquerda();}
-			tempo=millis()-tempoanterior;}
-		while(true){// Após o tempo de 90 segs. o robo para
-			parar();
-		}}}
+			if(estadosbfd==1 || estadosbfe==1)
+			{ // """Vai para "trás" caso sensor da frente acusar o branco"""   NOTA: 0 - Branco,  1 - Preto
+				andartras();
+			}
+			else if(estadosbtd==1 || estadosbte==1)
+			{ // """Vai para "Frente" caso sensor de trás acusar o branco."""   NOTA: 0 - Branco,  1 - Preto
+				andarfrente();
+			}
+			else if(distanciafrente<=60 && estadosbfd==0 && estadosbfe==0)
+			{ // """Ir para "Frente" caso ache um oponente na "frente" e os sensore não estiver na borda"""
+				andarfrente();
+			}
+			else if(distanciadireita<=60)
+			{ // """Girar para Direita" caso ache um oponente a 7 centimetros"
+				girardireita();
+			}
+			else if(distanciaesquerda<=60)
+			{ // """Girar para Esquerda" caso ache um oponente a 7 centimetros"
+				giraresquerda();
+			}
+			tempo=millis()-tempoanterior;
+		}
+		
+		while(true)
+		{// Após o tempo de 90 segs. o robo para
+			pararMovimento();
+		}
+	}
+}
