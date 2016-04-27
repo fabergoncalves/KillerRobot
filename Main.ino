@@ -21,10 +21,10 @@ const byte motorDireito1=11;
 const byte motorDireito2=10;
 const byte motorEsquerdo1=9;
 const byte motorEsquerdo2=8;
-const byte sbfd=7;
-const byte sbfe=6;
-const byte sbtd=5;
-const byte sbte=4;
+const byte infraDireitoFrente=7;
+const byte infraEsquerdoFrente=6;
+const byte infraDireitoTraseiro=5;
+const byte infraEsquerdoTraseiro=4;
 const int trigpinfrente=3;
 const int echopinfrente=2;
 const int trigpinesq=A4;
@@ -37,10 +37,10 @@ int distanciadireita=0;
 unsigned long tempo=0;
 unsigned long tempoanterior=0;
 boolean estadobotao=0;
-boolean estadosbfd;
-boolean estadosbfe;
-boolean estadosbtd;
-boolean estadosbte;
+boolean estadoInfraDireitoFrente;
+boolean estadoInfraEsquerdoFrente;
+boolean estadoInfraDireitoTraseiro;
+boolean estadoInfraEsquerdoTraseiro;
 int i;
 
 void setup()
@@ -51,10 +51,10 @@ void setup()
 	pinMode(motorEsquerdo2,OUTPUT);
 	pinMode(motorDireito1,OUTPUT);
 	pinMode(motorDireito2,OUTPUT);
-	pinMode(sbfd,INPUT);
-	pinMode(sbfe,INPUT);
-	pinMode(sbtd,INPUT);
-	pinMode(sbte,INPUT);
+	pinMode(infraDireitoFrente,INPUT);
+	pinMode(infraEsquerdoFrente,INPUT);
+	pinMode(infraDireitoTraseiro,INPUT);
+	pinMode(infraEsquerdoTraseiro,INPUT);
 	pinMode(trigpinfrente,OUTPUT);
 	pinMode(echopinfrente,INPUT);
 	pinMode(trigpinesq,OUTPUT);
@@ -175,22 +175,22 @@ void loop(){
 		while(tempo<90000)
 		{
 			//luta enquanto durar tempo da partida
-			estadosbfd=digitalRead(sbfd); // Bate um pano no cenário através dos sensores
-			estadosbfe=digitalRead(sbfe); //
-			estadosbtd=digitalRead(sbtd); //
-			estadosbte=digitalRead(sbte); //
+			estadoInfraDireitoFrente = digitalRead(infraDireitoFrente); // Bate um pano no cenário através dos sensores
+			estadoInfraEsquerdoFrente = digitalRead(infraEsquerdoFrente); //
+			estadoInfraDireitoTraseiro = digitalRead(infraDireitoTraseiro); //
+			estadoInfraEsquerdoTraseiro = digitalRead(infraEsquerdoTraseiro); //
 			ultrassonicofrente();
 			ultrassonicoesquerda();
 			ultrassonicodireita();
-			if(estadosbfd==1 || estadosbfe==1)
+			if(estadoInfraDireitoFrente == 1 || estadoInfraEsquerdoFrente == 1)
 			{ // """Vai para "trás" caso sensor da frente acusar o branco"""   NOTA: 0 - Branco,  1 - Preto
 				andartras();
 			}
-			else if(estadosbtd==1 || estadosbte==1)
+			else if(estadoInfraDireitoTraseiro == 1 || estadoInfraEsquerdoTraseiro == 1)
 			{ // """Vai para "Frente" caso sensor de trás acusar o branco."""   NOTA: 0 - Branco,  1 - Preto
 				andarfrente();
 			}
-			else if(distanciafrente<=60 && estadosbfd==0 && estadosbfe==0)
+			else if(distanciafrente<=60 && estadoInfraDireitoFrente==0 && estadoInfraEsquerdoFrente==0)
 			{ // """Ir para "Frente" caso ache um oponente na "frente" e os sensore não estiver na borda"""
 				andarfrente();
 			}
@@ -202,7 +202,7 @@ void loop(){
 			{ // """Girar para Esquerda" caso ache um oponente a 7 centimetros"
 				giraresquerda();
 			}
-			tempo=millis()-tempoanterior;
+			tempo = millis() - tempoanterior;
 		}
 		
 		while(true)
