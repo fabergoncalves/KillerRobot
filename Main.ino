@@ -21,26 +21,26 @@ const byte motorDireito1=11;
 const byte motorDireito2=10;
 const byte motorEsquerdo1=9;
 const byte motorEsquerdo2=8;
-const byte sbfd=7;
-const byte sbfe=6;
-const byte sbtd=5;
-const byte sbte=4;
-const int trigpinfrente=3;
-const int echopinfrente=2;
-const int trigpinesq=A4;
-const int echopinesq=A3;
-const int trigpindir=A1;
-const int echopindir=A5;
-int distanciafrente=0;
-int distanciaesquerda=0;
-int distanciadireita=0;
-unsigned long tempo=0;
-unsigned long tempoanterior=0;
-boolean estadobotao=0;
-boolean estadosbfd;
-boolean estadosbfe;
-boolean estadosbtd;
-boolean estadosbte;
+const byte infraDireitoFrente=7;
+const byte infraEsquerdoFrente=6;
+const byte infraDireitoTraseiro=5;
+const byte infraEsquerdoTraseiro=4;
+const int trigPinFrontal=3;
+const int echoPinFrontal=2;
+const int trigPinEsquerdo=A4;
+const int echoPinEsquerdo=A3;
+const int trigPinDireito=A1;
+const int echoPinDireito=A5;
+int distanciaUltrasomFrontal=0;
+int distanciaUltrasomEsquerdo=0;
+int distanciaUltrasoDireito=0;
+unsigned long tempoPartida=0;
+unsigned long tempoAnterior=0;
+boolean estadoBotao=0;
+boolean estadoInfraDireitoFrente;
+boolean estadoInfraEsquerdoFrente;
+boolean estadoInfraDireitoTraseiro;
+boolean estadoInfraEsquerdoTraseiro;
 int i;
 
 void setup()
@@ -51,16 +51,16 @@ void setup()
 	pinMode(motorEsquerdo2,OUTPUT);
 	pinMode(motorDireito1,OUTPUT);
 	pinMode(motorDireito2,OUTPUT);
-	pinMode(sbfd,INPUT);
-	pinMode(sbfe,INPUT);
-	pinMode(sbtd,INPUT);
-	pinMode(sbte,INPUT);
-	pinMode(trigpinfrente,OUTPUT);
-	pinMode(echopinfrente,INPUT);
-	pinMode(trigpinesq,OUTPUT);
-	pinMode(echopinesq,INPUT);
-	pinMode(trigpindir,OUTPUT);
-	pinMode(echopindir,INPUT);
+	pinMode(infraDireitoFrente,INPUT);
+	pinMode(infraEsquerdoFrente,INPUT);
+	pinMode(infraDireitoTraseiro,INPUT);
+	pinMode(infraEsquerdoTraseiro,INPUT);
+	pinMode(trigPinFrontal,OUTPUT);
+	pinMode(echoPinFrontal,INPUT);
+	pinMode(trigPinEsquerdo,OUTPUT);
+	pinMode(echoPinEsquerdo,INPUT);
+	pinMode(trigPinDireito,OUTPUT);
+	pinMode(echoPinDireito,INPUT);
 }
 
 //Funções de movimento do robo, usando portas digitas
@@ -68,7 +68,6 @@ void andarFrente()
 {
 	digitalWrite(motorDireito1,HIGH);
 	digitalWrite(motorEsquerdo1,HIGH);
-	
 	digitalWrite(motorDireito2,HIGH);
 	digitalWrite(motorEsquerdo2,HIGH);
 	
@@ -78,7 +77,6 @@ void andarTras()
 {
 	digitalWrite(motorDireito1,LOW);
 	digitalWrite(motorEsquerdo1,LOW);
-	
 	digitalWrite(motorDireito2,HIGH);
 	digitalWrite(motorEsquerdo2,HIGH);
 		
@@ -88,7 +86,6 @@ void pararMovimento()
 {
 	digitalWrite(motorDireito1,LOW);
 	digitalWrite(motorEsquerdo1,LOW);
-	
 	digitalWrite(motorDireito2,LOW);
 	digitalWrite(motorEsquerdo2,LOW);
 	
@@ -98,7 +95,6 @@ void girarDireita()
 {
 	digitalWrite(motorDireito1,LOW);
 	digitalWrite(motorEsquerdo1,HIGH);
-	
 	digitalWrite(motorDireito2,HIGH);
 	digitalWrite(motorEsquerdo2,LOW);
 	
@@ -108,44 +104,52 @@ void girarEsquerda()
 	
 	digitalWrite(motorDireito1,HIGH);
 	digitalWrite(motorEsquerdo1,LOW);
-	
 	digitalWrite(motorDireito2,LOW);
 	digitalWrite(motorEsquerdo2,HIGH);
 		
 }
 
+//Funções de medicao para o ultrasom. Ultrasom utilizado: Frontal, esquerdo e direito
 int medicaoUltrasomFrontal()
-{ //Função para retornar a distância aferida pelo sensor ultrasonico da frente
-	digitalWrite(trigpinfrente,LOW);
+{
+	digitalWrite(trigPinFrontal,LOW);
 	delayMicroseconds(2);
-	digitalWrite(trigpinfrente,HIGH);
+	digitalWrite(trigPinFrontal,HIGH);
 	delayMicroseconds(10);
-	digitalWrite(trigpinfrente,LOW);
-	unsigned long duracao=pulseIn(echopinfrente,HIGH);
-	distanciafrente=duracao/58;
-	return(distanciafrente);
+	
+	digitalWrite(trigPinFrontal,LOW);
+	unsigned long duracaoRespostaUltrasom = pulseIn(echoPinFrontal,HIGH);
+	distanciaUltrasomFrontal = duracaoRespostaUltrasom/58;
+	
+	return(distanciaUltrasomFrontal);
 }
 
-int medicaoUltrasomEsquerda(){ //Função para retornar a distância aferida pelo sensor ultrasonico da esquerda
-	analogWrite(trigpinesq,0);
+int medicaoUltrasomEsquerda()
+{
+	analogWrite(trigPinEsquerdo,0);
 	delayMicroseconds(2);
-	analogWrite(trigpinesq,255);
+	analogWrite(trigPinEsquerdo,255);
 	delayMicroseconds(10);
-	analogWrite(trigpinesq,0);
-	unsigned long duracao=pulseIn(echopinesq,HIGH);
-	distanciaesquerda=duracao/58;
-	return(distanciaesquerda);
+	
+	analogWrite(trigPinEsquerdo,0);
+	unsigned long duracaoRespostaUltrasom = pulseIn(echoPinEsquerdo,HIGH);
+	distanciaUltrasomEsquerdo = duracaoRespostaUltrasom/58;
+	
+	return(distanciaUltrasomEsquerdo);
 }
 
-int medicaoUltrasomDireita(){ //Função para retornar a distância aferida pelo sensor ultrasonico da direita
-	analogWrite(trigpindir,0);
+int medicaoUltrasomDireita()
+{
+	analogWrite(trigPinDireito,0);
 	delayMicroseconds(2);
-	analogWrite(trigpindir,255);
+	analogWrite(trigPinDireito,255);
 	delayMicroseconds(10);
-	analogWrite(trigpindir,0);
-	unsigned long duracao=pulseIn(echopindir,255);
-	distanciadireita=duracao/58;
-	return(distanciadireita);
+	
+	analogWrite(trigPinDireito,0);
+	unsigned long duracaoRespostaUltrasom = pulseIn(echoPinDireito,255);
+	distanciaUltrasoDireito = duracaoRespostaUltrasom/58;
+	
+	return(distanciaUltrasoDireito);
 }
 
 void piscarLed()
@@ -160,33 +164,52 @@ void piscarLed()
 	}
 }
 
-void loop(){
-	estadobotao=digitalRead(botao);
+void loop()
+{
+	estadoBotao = digitalRead(botao);
 
-	while(estadobotao==0){// fica lendo o botao (pull-down) até se pressionado
-		estadobotao=digitalRead(botao);
-		piscarled();
-		andarfrente();
-		tempoanterior=millis();
-		while(tempo<90000){ //luta enquanto durar tempo da partida
-			estadosbfd=digitalRead(sbfd); // Bate um pano no cenário através dos sensores
-			estadosbfe=digitalRead(sbfe); //
-			estadosbtd=digitalRead(sbtd); //
-			estadosbte=digitalRead(sbte); //
-			ultrassonicofrente();
-			ultrassonicoesquerda();
-			ultrassonicodireita();
-			if(estadosbfd==1 || estadosbfe==1) { // """Vai para "trás" caso sensor da frente acusar o branco"""   NOTA: 0 - Branco,  1 - Preto
-				andartras();}
-			else if(estadosbtd==1 || estadosbte==1) { // """Vai para "Frente" caso sensor de trás acusar o branco."""   NOTA: 0 - Branco,  1 - Preto
-				andarfrente();}
-			else if(distanciafrente<=60 && estadosbfd==0 && estadosbfe==0) { // """Ir para "Frente" caso ache um oponente na "frente" e os sensore não estiver na borda"""
-				andarfrente();}
-			else if(distanciadireita<=60) { // """Girar para Direita" caso ache um oponente a 7 centimetros"
-				girardireita();}
-			else if(distanciaesquerda<=60) { // """Girar para Esquerda" caso ache um oponente a 7 centimetros"
-				giraresquerda();}
-			tempo=millis()-tempoanterior;}
-		while(true){// Após o tempo de 90 segs. o robo para
-			parar();
-		}}}
+	while(estadoBotao == 0)
+	{
+		estadoBotao=digitalRead(botao);
+		piscarLed();
+		andarFrente();
+		tempoAnterior = millis();
+		while(tempoPartida < 90000)
+		{
+			estadoInfraDireitoFrente = digitalRead(infraDireitoFrente);
+			estadoInfraEsquerdoFrente = digitalRead(infraEsquerdoFrente);
+			estadoInfraDireitoTraseiro = digitalRead(infraDireitoTraseiro);
+			estadoInfraEsquerdoTraseiro = digitalRead(infraEsquerdoTraseiro);
+			
+			ultrassonicoFrente();
+			ultrassonicoEsquerda();
+			ultrassonicoDireita();
+			
+			//NOTA: 0 - Branco,  1 - Preto
+			if(estadoInfraDireitoFrente == 1 || estadoInfraEsquerdoFrente == 1)
+			{ 
+				andarTras();
+			}
+			else if(estadoInfraDireitoTraseiro == 1 || estadoInfraEsquerdoTraseiro == 1)
+			{ 
+				andarFrente();
+			}
+			else if(distanciaUltrasomFrontal <= 60 && estadoInfraDireitoFrente == 0 && estadoInfraEsquerdoFrente == 0)
+			{
+				andarFrente();
+			}
+			else if(distanciaUltrasoDireito <= 60)
+			{
+				girarDireita();
+			}
+			else if(distanciaUltrasomEsquerdo <= 60)
+			{
+				girarEsquerda();
+			}
+			tempoPartida = millis() - tempoAnterior;
+		}
+		
+		pararMovimento();
+		
+	}
+}
