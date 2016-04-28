@@ -9,9 +9,13 @@
 #	Notas: HIGH = Ligado, LOW = Desligado
 #
 #	
-#
-#
 ##########################################################################################################################################
+
+- Testar ultrasom
+- Remover piao do bau (deixar de girar infinitamente)
+- Deixar 
+
+
 */
 
 //Variaveis para definir portas de entrada para o robo
@@ -93,6 +97,7 @@ void pararMovimento()
 
 void girarDireita()
 {
+	
 	digitalWrite(motorDireito1,LOW);
 	digitalWrite(motorEsquerdo1,HIGH);
 	digitalWrite(motorDireito2,HIGH);
@@ -185,6 +190,23 @@ void loop()
 			ultrassonicoEsquerda();
 			ultrassonicoDireita();
 			
+			if(distanciaUltrasomFrontal <= 70)
+			{
+				andarFrente();
+			}
+			else if(distanciaUltrasoDireito <= 70)
+			{
+				//girarDireita();
+				andarFrente();
+			}
+			else if(distanciaUltrasomEsquerdo <= 70)
+			{
+				//girarEsquerda();
+				andarFrente();
+			}
+			
+			
+			/*
 			//NOTA: 0 - Branco,  1 - Preto
 			if(estadoInfraDireitoFrente == 1 || estadoInfraEsquerdoFrente == 1)
 			{ 
@@ -201,11 +223,13 @@ void loop()
 			else if(distanciaUltrasoDireito <= 60)
 			{
 				girarDireita();
+				andarFrente();
 			}
 			else if(distanciaUltrasomEsquerdo <= 60)
 			{
 				girarEsquerda();
 			}
+			*/
 			tempoPartida = millis() - tempoAnterior;
 		}
 		
